@@ -1,0 +1,1 @@
+{"school": {"name": "school", "tables": {"student": {"id": {"type": "int", "key": ["null"], "values": [1, 2, 3, 4], "default": null}, "name": {"type": "str", "key": ["unique"], "values": ["chen", "liang", "wu", "shi"], "default": null}}}}, "party": {"name": "party", "tables": {}}}
