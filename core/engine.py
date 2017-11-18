@@ -129,10 +129,10 @@ class Engine:
         self.__get_table_obj(table_name).insert(**kwargs)
 
     # 查看指定表中的数据（目前只是全部的）
-    def __select_table(self, field, table_name, conditions):
+    def __select_table(self, fields, table_name, conditions):
         self.__check_is_choose()
         self.__check_table_exist(table_name)
-        self.__current_db.get_table_obj(table_name).select(field, conditions)
+        self.__current_db.get_table_obj(table_name).select(fields, conditions)
 
     # 序列化
     def serializer(self):
@@ -207,10 +207,10 @@ class Engine:
 
         if action_type == 'select':
             self.__check_is_choose()
-            field = action['field']
+            fields = action['fields']
             table_name = action['table_name']
             conditions = action['conditions']
-            self.__select_table(field, table_name, conditions)
+            self.__select_table(fields, table_name, conditions)
 
     # 开始工作，提供while循环接收命令
     def run(self):

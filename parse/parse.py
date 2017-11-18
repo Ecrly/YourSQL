@@ -126,10 +126,12 @@ def __insert(statement):
 def __select(statement):
     result = pattern_map['select'].findall(" ".join(statement))
     tup = result[0]
-    print(tup)
+    fields = tup[0].split(',')
+    for i in range(0, len(fields)):
+        fields[i] = fields[i].strip()
     return {
         'type': 'select',
-        'field': tup[0],
+        'fields': fields,
         'table_name': tup[1],
     }
 
@@ -152,8 +154,17 @@ action_map = {
     'drop': __drop,
 }
 
-symbol_map = {
+case_map = {
     'range': RangeCase,
+    'in': InCase,
+    'not_in': NotInCase,
+    '=': IsCase,
+    '!=': IsNotCase,
+    '>': GreaterCase,
+    '<': LessCase,
+    '>=': GAECase,
+    '<=': LAECase,
+    'like': LikeCase,
 }
 
 
@@ -216,7 +227,14 @@ def parse(sql):
                 condition_tmp = condition.replace('(', '').replace(')', '').split(',')
                 start = condition_tmp[0].strip(' ')
                 end = condition_tmp[1].strip(' ')
-                case = symbol_map[symbol](start, end)
+                case = case_map[symbol](start, end)
+
+            elif symbol == 'in' or symbol == 'not_in':
+                condition_tmp = condition.replace('(', '').replace(')', '').replace(' ', '').split(',')
+                case = case_map[symbol](condition_tmp)
+
+            else:
+                case = case_map[symbol](condition)
 
             action['conditions'][field] = case
 
