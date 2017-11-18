@@ -135,10 +135,35 @@ def __select(statement):
         'table_name': tup[1],
     }
 
+
+def __update(statement):
+    result = pattern_map['update'].findall(" ".join(statement))
+    tup = result[0]
+    tmp = re.split(" |,", tup[1])
+    elems = []
+    for elem in tmp:
+        if elem == "":
+            continue
+        if "'" in elem or '"' in elem:
+            elem = elem.replace("'", "").replace('"', '')
+        elems.append(elem)
+    print(elems)
+    if len(elems) % 3 != 0:
+        raise Exception('Syntax error: set not matched!')
+    data = {}
+    for i in range(0, len(elems), 3):
+        data[elems[i]] = elems[i + 2]
+    return {
+        'type': 'update',
+        'table_name': tup[0],
+        'data': data,
+    }
+
 pattern_map = {
     'insert': re.compile(r'insert into (.*)\((.*)\) values\((.*)\)'),
     'create': re.compile(r'create table (.*)\((.*)\)'),
     'select': re.compile(r'select (.*) from (.*)'),
+    'update': re.compile(r'update (.*) set (.*)'),
 }
 
 
@@ -152,6 +177,7 @@ action_map = {
     'insert': __insert,
     'select': __select,
     'drop': __drop,
+    'update': __update,
 }
 
 case_map = {

@@ -8,3 +8,6 @@ parse(create)
 
 select = "select id,name,age from student where id range (1,2) name = 'chen'"
 parse(select)
+
+update = "update student set id = 1, name = 'liang'"
+parse(update)

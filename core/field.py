@@ -43,6 +43,10 @@ class Field(SerializerInterface):
             if self.__default is not None:
                 raise Exception("unique type can't has default value")
 
+        # not_null和null不能共存
+        if 'not_null' in self.__keys and 'null' in self.__keys:
+            raise Exception("'not_null' and 'null' can't exists in the same field!")
+
         # 检查default是否符合类型
         if not isinstance(self.__default, TYPE[self.__type]) and self.__default is not None:
             raise Exception('default type wrong, field is %s '% self.__type)
@@ -64,6 +68,15 @@ class Field(SerializerInterface):
         # 插入数据
         self.__values.append(value)
         self.__row += 1
+
+    # 更新数据
+    def update(self, value, index):
+        value = self.__check_value(value)
+        # 检查值与类型是否符合
+        if value is not None and not isinstance(value, TYPE[self.__type]):
+            raise Exception('Type wrong, field is %s' % self.__type)
+        for i in index:
+            self.__values[i] = value
 
     def __check_value(self, value):
 

@@ -128,11 +128,17 @@ class Engine:
         self.__check_table_exist(table_name)
         self.__get_table_obj(table_name).insert(**kwargs)
 
-    # 查看指定表中的数据（目前只是全部的）
+    # 查看指定表中的数据
     def __select_table(self, fields, table_name, conditions):
         self.__check_is_choose()
         self.__check_table_exist(table_name)
         self.__current_db.get_table_obj(table_name).select(fields, conditions)
+
+    # 更新指定表中的数据
+    def __update_table(self, table_name, data, conditions):
+        self.__check_is_choose()
+        self.__check_table_exist(table_name)
+        self.__current_db.get_table_obj(table_name).update(data, conditions)
 
     # 序列化
     def serializer(self):
@@ -207,10 +213,11 @@ class Engine:
 
         if action_type == 'select':
             self.__check_is_choose()
-            fields = action['fields']
-            table_name = action['table_name']
-            conditions = action['conditions']
-            self.__select_table(fields, table_name, conditions)
+            self.__select_table(action['fields'], action['table_name'],action['conditions'])
+
+        if action_type == 'update':
+            self.__check_is_choose()
+            self.__update_table(action['table_name'], action['data'], action['conditions'])
 
     # 开始工作，提供while循环接收命令
     def run(self):

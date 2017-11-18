@@ -84,6 +84,15 @@ class Table(SerializerInterface):
         print(pt)
         print('%s rows in set' % len(match_index))
 
+    # 更新表中的数据
+    def update(self, data, conditons):
+        match_index = self.__parse_conditions(conditons)
+        for name, value in data.items():
+            if name not in self.__field_names:
+                raise Exception('Field %s you want to update is not exists!' % name)
+            self.__field_objs[name].update(value, match_index)
+        print('%s rows were updated' % len(match_index))
+
     # 解析查询条件返回符合条件的索引
     def __parse_conditions(self, conditions):
 

@@ -9,7 +9,8 @@ insert2 = "insert into class(name, age, sex) values('liang', 13, 'nv')"
 insert3 = "insert into class(name, age, sex) values('ni', 15, 'man')"
 insert4 = "insert into class(name, age, sex) values('hao', 17, 'man')"
 select1 = "select * from class"
-select2 = "select id,name from class where id <= 2"
+select2 = "select id, name from class where id <= 2"
+update1= "update class set sex = 'zhong',name = 'en' where id range (1,3)"
 
 show_table = "show tables"
 drop_table = "drop table student"
@@ -24,3 +25,5 @@ engine.execute(insert3)
 engine.execute(insert4)
 engine.execute(select1)
 engine.execute(select2)
+engine.execute(update1)
+engine.execute(select1)
