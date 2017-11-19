@@ -90,8 +90,24 @@ class Table(SerializerInterface):
         for name, value in data.items():
             if name not in self.__field_names:
                 raise Exception('Field %s you want to update is not exists!' % name)
-            self.__field_objs[name].update(value, match_index)
+            for index in match_index:
+                self.__field_objs[name].update(value, index)
         print('%s rows were updated' % len(match_index))
+
+    # 删除表中的数据
+    def delete(self, conditons):
+        match_index = self.__parse_conditions(conditons)
+        for field_obj in self.__field_objs.values():
+            count = 0
+            max_tmp = 0
+            for index in match_index:
+                if index > max_tmp:
+                    max_tmp = index
+                    index -= count
+                field_obj.delete(index)
+                count += 1
+        print('%s rows were deleted' % len(match_index))
+        self.__row -= len(match_index)
 
     # 解析查询条件返回符合条件的索引
     def __parse_conditions(self, conditions):

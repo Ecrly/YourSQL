@@ -18,6 +18,48 @@ class Field(SerializerInterface):
         self.__row = 0
         self.__values = []
 
+    # 向字段中插入数据
+    def add(self, value):
+
+        # 如果值为空就用默认值，注意默认值也可能为空，需要进一步检查
+        if value is None:
+            value = self.__default
+
+        # 检查值与键是否符合
+        value = self.__check_value(value)
+
+        # 检查值与类型是否符合
+        self.__check_type(value)
+
+        # 插入数据
+        self.__values.append(value)
+        self.__row += 1
+
+    # 更新数据
+    def update(self, value, index):
+
+        # 检查值与键是否符合
+        value = self.__check_value(value)
+
+        # 检查值与类型是否符合
+        self.__check_type(value)
+
+        # 检查索引合法性
+        self.__check_index(index)
+
+        # 更新数据
+        self.__values[index] = value
+
+    # 删除数据
+    def delete(self, index):
+
+        # 检查索引合法性
+        self.__check_index(index)
+
+        # 删除数据
+        self.__values.pop(index)
+        self.__row -= 1
+
     def __check_type_exits(self):
         if self.__type not in TYPE:
             raise Exception('Not this type %s' % self.__type)
@@ -51,43 +93,20 @@ class Field(SerializerInterface):
         if not isinstance(self.__default, TYPE[self.__type]) and self.__default is not None:
             raise Exception('default type wrong, field is %s '% self.__type)
 
-    # 向字段中插入数据
-    def add(self, value):
-
-        # 如果值为空就用默认值，注意默认值也可能为空，需要进一步检查
-        if value is None:
-            value = self.__default
-
-        # 检查值与键是否符合
-        value = self.__check_value(value)
-
-        # 检查值与类型是否符合
-        if value is not None and not isinstance(value, TYPE[self.__type]):
-            raise Exception('type wrong, field is %s' % self.__type)
-
-        # 插入数据
-        self.__values.append(value)
-        self.__row += 1
-
-    # 更新数据
-    def update(self, value, index):
-        value = self.__check_value(value)
-        # 检查值与类型是否符合
-        if value is not None and not isinstance(value, TYPE[self.__type]):
-            raise Exception('Type wrong, field is %s' % self.__type)
-        for i in index:
-            self.__values[i] = value
-
     def __check_value(self, value):
 
         # 如果是自增类型的
         if 'auto_increment' in self.__keys:
             # 可以不给值，直接默认往后加
             if value is None:
-                value = self.__row + 1
+                if self.__row == 0:
+                    value = 1
+                else:
+                    value = self.__values[self.__row - 1] + 1
             # 如果给值了，那就有点麻烦，因为他可能和前面重复，即使和前面不重复也可能和后面重复
-            # 草他妈的不管了，直接给异常了
+            # 草他妈的不管了，直接给异常了,他妈的自增还指定数据有病，肯定有病
             if value in self.__values:
+                # value = self.__values[self.__row - 1] + 1
                 raise Exception('value %s exists! and the field type is auto_increment!!' % value)
 
         # 如果是主键或者非空
@@ -99,6 +118,16 @@ class Field(SerializerInterface):
             raise Exception("value %s exists!!" % value)
 
         return value
+
+    def __check_type(self, value):
+
+        # 如果不是None又不符合类型，报异常
+        if value is not None and not isinstance(value, TYPE[self.__type]):
+            raise Exception('Type error, field is %s' % self.__type)
+
+    def __check_index(self, index):
+        if not -index < self.__row > index:
+            raise Exception('Not have this element')
 
     def __str__(self):
         return '<' + self.__type + ',' + self.__keys + '>'

@@ -159,11 +159,22 @@ def __update(statement):
         'data': data,
     }
 
+
+def __delete(statement):
+    result = pattern_map['delete'].findall(" ".join(statement))
+    if len(result) != 1:
+        raise Exception('Syntax error: check your delete statement!')
+    return {
+        'type': 'delete',
+        'table_name': result[0],
+    }
+
 pattern_map = {
     'insert': re.compile(r'insert into (.*)\((.*)\) values\((.*)\)'),
     'create': re.compile(r'create table (.*)\((.*)\)'),
     'select': re.compile(r'select (.*) from (.*)'),
     'update': re.compile(r'update (.*) set (.*)'),
+    'delete': re.compile(r'delete from (.*)'),
 }
 
 
@@ -178,6 +189,7 @@ action_map = {
     'select': __select,
     'drop': __drop,
     'update': __update,
+    'delete': __delete,
 }
 
 case_map = {

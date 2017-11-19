@@ -140,6 +140,12 @@ class Engine:
         self.__check_table_exist(table_name)
         self.__current_db.get_table_obj(table_name).update(data, conditions)
 
+    # 删除指定表中的数据
+    def __delete_table(self, table_name, conditions):
+        self.__check_is_choose()
+        self.__check_table_exist(table_name)
+        self.__current_db.get_table_obj(table_name).delete(conditions)
+
     # 序列化
     def serializer(self):
         data = {}
@@ -218,6 +224,10 @@ class Engine:
         if action_type == 'update':
             self.__check_is_choose()
             self.__update_table(action['table_name'], action['data'], action['conditions'])
+
+        if action_type == 'delete':
+            self.__check_is_choose()
+            self.__delete_table(action['table_name'], action['conditions'])
 
     # 开始工作，提供while循环接收命令
     def run(self):

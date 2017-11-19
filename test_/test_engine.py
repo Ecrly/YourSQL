@@ -1,6 +1,7 @@
 from core.engine import *
 
 engine = Engine()
+create_db = "create database party"
 use = "use party"
 create = "create table class(id int auto_increment, name str, age int null, sex str)"
 desc = "desc class"
@@ -10,12 +11,13 @@ insert3 = "insert into class(name, age, sex) values('ni', 15, 'man')"
 insert4 = "insert into class(name, age, sex) values('hao', 17, 'man')"
 select1 = "select * from class"
 select2 = "select id, name from class where id <= 2"
-update1= "update class set sex = 'zhong',name = 'en' where id range (1,3)"
-
+update1 = "update class set sex = 'zhong',name = 'en' where id range (1,3)"
+delete1 = "delete from class where id range (1,3)"
 show_table = "show tables"
 drop_table = "drop table student"
 drop_database = "drop database party"
 show_databases = "show databases"
+engine.execute(create_db)
 engine.execute(use)
 engine.execute(create)
 engine.execute(desc)
@@ -26,4 +28,9 @@ engine.execute(insert4)
 engine.execute(select1)
 engine.execute(select2)
 engine.execute(update1)
+engine.execute(select1)
+engine.execute(delete1)
+engine.execute(select1)
+engine.execute(insert1)
+engine.execute(insert2)
 engine.execute(select1)

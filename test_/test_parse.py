@@ -11,3 +11,6 @@ parse(select)
 
 update = "update student set id = 1, name = 'liang'"
 parse(update)
+
+delete = "delete from student where name = 'liang'"
+parse(delete)
