@@ -21,6 +21,7 @@ class Database(SerializerInterface):
     # 验证表是否存在
     def is_exists(self, table_name):
         if table_name not in self.__table_names:
+            # print(self.__table_names)
             raise Exception('%s table is not exists' % table_name)
 
     # 获取指定表对象
@@ -40,6 +41,7 @@ class Database(SerializerInterface):
             raise Exception('%s table is already exists!' % table_name)
         self.__table_names.append(table_name)
         self.__table_objs[table_name] = table
+        # print('enen')
 
     # 创建表
     def create_table(self, table_name, **kwargs):

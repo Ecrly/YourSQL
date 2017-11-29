@@ -3,7 +3,7 @@ from util.case import *
 
 
 exit_action = ['exit', 'quit']
-show_type = ['databases', 'tables']
+show_type = ['databases', 'tables', 'users']
 
 
 def __exit(_):
@@ -39,7 +39,7 @@ def __use(statement):
 
 def __create(statement):
     kind = statement[1]
-    if kind not in ['database', 'table']:
+    if kind not in ['database', 'table', 'user']:
         return None
     if kind == 'database':
         return {
@@ -71,6 +71,13 @@ def __create(statement):
                 'field_keys': field_keys
             })
         return data
+    elif kind == 'user':
+        return {
+            'type': 'create',
+            'kind': 'user',
+            'name': statement[2],
+            'pwd': statement[4],
+        }
 
 
 def __drop(statement):
@@ -82,6 +89,30 @@ def __drop(statement):
         'type': 'drop',
         'kind': kind,
         'name': name,
+    }
+
+
+def __grant(statement):
+    result = pattern_map['grant'].findall(" ".join(statement))
+    tuple = result[0]
+    print(tuple)
+    return {
+        'type': 'grant',
+        'priv': tuple[0],
+        'db': tuple[1],
+        'user': tuple[2],
+    }
+
+
+def __revoke(statement):
+    result = pattern_map['revoke'].findall(" ".join(statement))
+    tuple = result[0]
+    print(tuple)
+    return {
+        'type': 'revoke',
+        'priv': tuple[0],
+        'db': tuple[1],
+        'user': tuple[2],
     }
 
 
@@ -147,7 +178,6 @@ def __update(statement):
         if "'" in elem or '"' in elem:
             elem = elem.replace("'", "").replace('"', '')
         elems.append(elem)
-    print(elems)
     if len(elems) % 3 != 0:
         raise Exception('Syntax error: set not matched!')
     data = {}
@@ -175,6 +205,8 @@ pattern_map = {
     'select': re.compile(r'select (.*) from (.*)'),
     'update': re.compile(r'update (.*) set (.*)'),
     'delete': re.compile(r'delete from (.*)'),
+    'grant': re.compile(r'grant (.*) on (.*) to (.*)'),
+    'revoke': re.compile(r'revoke (.*) on (.*) from (.*)'),
 }
 
 
@@ -190,6 +222,8 @@ action_map = {
     'drop': __drop,
     'update': __update,
     'delete': __delete,
+    'grant': __grant,
+    'revoke': __revoke,
 }
 
 case_map = {

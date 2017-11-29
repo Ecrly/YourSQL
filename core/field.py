@@ -145,12 +145,12 @@ class Field(SerializerInterface):
         return self.__row
 
     def serializer(self):
-        return ({
+        return {
             'type': self.__type,
             'key': self.__keys,
             'values': self.__values,
             'default': self.__default,
-        })
+        }
 
     @staticmethod
     def deserializer(data):

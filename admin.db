@@ -1,0 +1,1 @@
+{"root": {"name": "root", "pwd": "root", "auz": "root", "privs": ["all"], "dbs": ["all"]}, "chen": {"name": "chen", "pwd": "123", "auz": "client", "privs": ["select"], "dbs": ["test01"]}, "test": {"name": "test", "pwd": "123", "auz": "client", "privs": [], "dbs": []}}

@@ -1,0 +1,9 @@
+{
+    "root":
+    {
+        "name":"root",
+        "pwd": "root",
+        "privs": "[]",
+        "dbs": "[]"
+    }
+}

@@ -1,5 +1,6 @@
 from core.database import *
 from parse.parse import *
+from userAdmin.admin import *
 
 
 class Engine:
@@ -10,6 +11,8 @@ class Engine:
         self.__database_objs = {}
         self.__current_db = None
         self.__load_databases()
+        self.__admin = Admin()
+        self.__user_names = []
 
     # 判断数据库是否已经存在
     def __is_exists(self, db_name):
@@ -25,6 +28,7 @@ class Engine:
 
     # 保存数据到本地（退出时）
     def __dump_databases(self):
+        self.__admin.dump_user()
         with open('database.db', 'w') as f:
             f.write(json.dumps(self.serializer()))
         pass
@@ -96,6 +100,7 @@ class Engine:
 
     # 检查当前选中的数据库中是否含指定表
     def __check_table_exist(self, table_name):
+        # pass
         if table_name not in self.__current_db.get_tables():
             raise Exception('Not have this table %s ' % table_name)
 
@@ -189,6 +194,8 @@ class Engine:
                     print('%s tables is found~' % len(ret))
                 else:
                     print('0 tables if found, you can use create to create table')
+            elif action['kind'] == 'users':
+                self.__admin.show_users()
 
         if action_type == 'desc':
             self.__describle_table(action['table_name'])
@@ -200,14 +207,20 @@ class Engine:
             if action['kind'] == 'database':
                 self.create_database(action['name'])
             if action['kind'] == 'table':
+                self.__admin.check_priv('create', self.__current_db.get_name())
                 fields = action['fields']
                 kwargs = {}
                 for field in fields:
                     field_obj = Field(type=field['field_type'], key=field['field_keys'])
                     kwargs[field['field_name']] = field_obj
                 self.create_table(action['table_name'], **kwargs)
+            if action['kind'] == 'user':
+                if self.__admin.check_auz() != 'root':
+                    raise Exception('You are not root! can not create user')
+                self.__admin.create_user(action['name'], action['pwd'])
 
         if action_type == 'drop':
+            self.__admin.check_priv('drop', self.__current_db.get_name())
             if action['kind'] == 'database':
                 self.__drop_database(action['name'])
             elif action['kind'] == 'table':
@@ -215,31 +228,48 @@ class Engine:
 
         if action_type == 'insert':
             self.__check_is_choose()
+            self.__admin.check_priv('insert', self.__current_db.get_name())
             self.__insert_into_table(action['table_name'], action['kwargs'])
 
         if action_type == 'select':
             self.__check_is_choose()
+            self.__admin.check_priv('select', self.__current_db.get_name())
             self.__select_table(action['fields'], action['table_name'],action['conditions'])
 
         if action_type == 'update':
             self.__check_is_choose()
+            self.__admin.check_priv('update', self.__current_db.get_name())
             self.__update_table(action['table_name'], action['data'], action['conditions'])
 
         if action_type == 'delete':
             self.__check_is_choose()
+            self.__admin.check_priv('delecte', self.__current_db.get_name())
             self.__delete_table(action['table_name'], action['conditions'])
+
+        if action_type == 'grant':
+            if self.__admin.check_auz() != 'root':
+                raise Exception('You are not root , can not use grant!')
+            self.__admin.grant_user(action['priv'], action['db'], action['user'])
 
     # 开始工作，提供while循环接收命令
     def run(self):
+        while self.__admin.get_cur_user() is None:
+            user_name = input('Please input your user name:')
+            user_pwd = input('Please input your user pwd:')
+            try:
+                self.__admin.check_user(user_name, user_pwd)
+            except Exception as e:
+                print(str(e))
+
         while True:
             statement = input('yoursql>>')
-            # try:
-            ret = self.execute(statement)
-            if ret:
-                if ret in ['exit', 'quit']:
-                    print('Goodbye~')
-                    break
-            else:
-                pass
-            # except Exception as e:
-            #     print(str(e))
+            try:
+                ret = self.execute(statement)
+                if ret:
+                    if ret in ['exit', 'quit']:
+                        print('Goodbye~')
+                        break
+                else:
+                    pass
+            except Exception as e:
+                print(str(e))

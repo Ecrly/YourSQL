@@ -1,1 +1,1 @@
-{}
+{"party": {"name": "party", "tables": {"class": {"id": {"type": "int", "key": ["auto_increment"], "values": [4, 5, 6], "default": null}, "name": {"type": "str", "key": ["null"], "values": ["hao", "chen", "liang"], "default": null}, "age": {"type": "int", "key": ["null"], "values": [17, 12, 13], "default": null}, "sex": {"type": "str", "key": ["null"], "values": ["man", "man", "nv"], "default": null}}}}}

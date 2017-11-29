@@ -14,3 +14,6 @@ parse(update)
 
 delete = "delete from student where name = 'liang'"
 parse(delete)
+
+grant = "grant insert on student to chen"
+parse(grant)
